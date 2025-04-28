@@ -21,28 +21,30 @@ namespace CloseFriends.Api
             builder.Services.AddDbContext<CloseFriendsContext>(options =>
                 options.UseSqlServer(connectionString));
 
+            // –егистраци€ контроллеров
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                // Ќастройка сериализации дл€ вывода enum в виде строк
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            });
+
             // ƒобавление контроллеров и других сервисов
             builder.Services.AddControllers();
 
-            // –егистрируем механизм дл€ исследовани€ API и генерации документации
+            // –егистраци€ Swagger дл€ визуализации и тестировани€ API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            //builder.Services.AddOpenApi();
 
             // –егистраци€ сервисов и репозиториев в соответствии с принципом Dependency Injection.
             // Ёто позвол€ет слабозависимые реализации и соблюдает принцип Inversion of Control.
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-            var app = builder.Build();
+            // –егистраци€ сервисов и репозиториев в DI-контейнере
+            builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 
-            //// Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            //{
-            //    app.MapOpenApi();
-            //}
+            var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
@@ -58,6 +60,9 @@ namespace CloseFriends.Api
         }
     }
 }
+
+//todo проверка, что при создании группы ownerId - реально существующий пользователь
+
 
 //—правка 
 //

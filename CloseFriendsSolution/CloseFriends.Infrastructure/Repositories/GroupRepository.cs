@@ -1,0 +1,40 @@
+﻿using System.Threading.Tasks;
+using CloseFriends.Application.Interfaces;
+using CloseFriends.Domain.Entities;
+using CloseFriends.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace CloseFriends.Infrastructure.Repositories
+{
+    /// <summary>
+    /// Реализация IGroupRepository с использованием Entity Framework Core.
+    /// </summary>
+    public class GroupRepository : IGroupRepository
+    {
+        private readonly CloseFriendsContext _context;
+
+        /// <summary>
+        /// Конструктор, внедряющий DbContext через Dependency Injection.
+        /// </summary>
+        public GroupRepository(CloseFriendsContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Добавляет новую группу в контекст.
+        /// </summary>
+        public async Task AddAsync(Group group)
+        {
+            await _context.Groups.AddAsync(group);
+        }
+
+        /// <summary>
+        /// Сохраняет изменения в базе данных.
+        /// </summary>
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+    }
+}

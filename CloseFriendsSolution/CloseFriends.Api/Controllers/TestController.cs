@@ -3,20 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace CloseFriends.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TestController : ControllerBase
     {
-        private readonly ILogger<TestController> _logger;
-
-        public TestController(ILogger<TestController> logger)
+        [HttpGet("ping")]
+        public IActionResult Ping()
         {
-            _logger = logger;
-        }
-
-        [HttpGet(Name = "GetTest")]
-        public int Get()
-        {
-            return 0;
+            return Ok("API работает!");
         }
     }
 }

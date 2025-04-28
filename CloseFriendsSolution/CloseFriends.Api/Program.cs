@@ -19,16 +19,27 @@ namespace CloseFriends.Api
 
             // ƒобавление контроллеров и других сервисов
             builder.Services.AddControllers();
-           
+
+            // –егистрируем механизм дл€ исследовани€ API и генерации документации
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            //builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            //// Configure the HTTP request pipeline.
+            //if (app.Environment.IsDevelopment())
+            //{
+            //    app.MapOpenApi();
+            //}
+
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                // ¬ключаем Swagger UI, который будет доступен по адресу /swagger
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

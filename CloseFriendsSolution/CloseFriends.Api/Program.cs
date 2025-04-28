@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CloseFriends.Infrastructure.Data;
+using CloseFriends.Application.Interfaces;
+using CloseFriends.Application.Services;
+using CloseFriends.Infrastructure.Repositories;
+using CloseFriends.Domain.Entities;
 
 namespace CloseFriends.Api
 {
@@ -27,6 +31,11 @@ namespace CloseFriends.Api
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             //builder.Services.AddOpenApi();
 
+            // Регистрация сервисов и репозиториев в соответствии с принципом Dependency Injection.
+            // Это позволяет слабозависимые реализации и соблюдает принцип Inversion of Control.
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
             var app = builder.Build();
 
             //// Configure the HTTP request pipeline.
@@ -45,8 +54,19 @@ namespace CloseFriends.Api
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
-
             app.Run();
         }
     }
 }
+
+//Справка 
+//
+//Domain: Содержит сущность User — чистую бизнес-модель без зависимостей от внешних библиотек.
+//
+//Application: Здесь определяются DTO для передачи данных между слоями, интерфейсы для сервисов и репозиториев, и реализуется бизнес-логика в UserService.
+//Это обеспечивает изоляцию бизнес-правил и позволяет легко тестировать логику.
+//
+//Infrastructure: Здесь происходит реализация доступа к данным через репозитории (например, UserRepository), используя EF Core и CloseFriendsContext. Этот слой отделён от бизнес-логики через интерфейсы.
+//
+//API: Контроллеры являются тонким слоем, отвечающим за прием HTTP-запросов, управление валидацией, логированием и передачей управления в Application-сервис. 
+//DI настроен так, чтобы зависимости разрешались автоматически согласно принципам SOLID.

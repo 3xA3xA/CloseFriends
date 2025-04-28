@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CloseFriends.Application\CloseFriends.Application.csproj" />
     <ProjectReference Include="..\CloseFriends.Domain\CloseFriends.Domain.csproj" />
   </ItemGroup>
 

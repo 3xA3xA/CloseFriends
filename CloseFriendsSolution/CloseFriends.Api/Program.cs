@@ -8,6 +8,7 @@ using CloseFriends.Domain.Entities;
 using CloseFriends.Application.Queries;
 using CloseFriends.Application.Commands;
 using System.Reflection;
+using Serilog;
 
 namespace CloseFriends.Api
 {
@@ -19,6 +20,8 @@ namespace CloseFriends.Api
 
             // Чтение строки подключения из конфигурации
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ?? connectionString;
+
 
             // Регистрация DbContext для использования в приложении
             builder.Services.AddDbContext<CloseFriendsContext>(options =>
@@ -30,6 +33,14 @@ namespace CloseFriends.Api
                 // Настройка сериализации для вывода enum в виде строк
                 options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)  // Читает настройки из appsettings.json
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             // Добавление контроллеров и других сервисов
             builder.Services.AddControllers();
@@ -75,6 +86,7 @@ namespace CloseFriends.Api
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<CloseFriends.Api.Middleware.ExceptionHandlingMiddleware>(); //Для обработки глобальных исключений
             app.UseAuthorization();
             app.MapControllers();
             app.Run();

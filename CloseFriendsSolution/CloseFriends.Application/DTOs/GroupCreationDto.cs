@@ -1,4 +1,5 @@
 ﻿using CloseFriends.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace CloseFriends.Application.DTOs
 {
@@ -9,18 +10,21 @@ namespace CloseFriends.Application.DTOs
     public class GroupCreationDto
     {
         /// <summary>
-        /// Название группы.
+        /// Название группы, обязательное поле.
         /// </summary>
+        [Required(ErrorMessage = "Название группы обязательно.")]
         public string Name { get; set; }
 
         /// <summary>
-        /// Тип группы, представленный как enum (Family, Couple, Friends).
+        /// Тип группы, обязательное поле.
         /// </summary>
+        [Required(ErrorMessage = "Тип группы обязателен.")]
         public GroupType Type { get; set; }
 
         /// <summary>
-        /// URL изображения для группы.
+        /// URL для фотографии группы. (Если указан – должен быть корректным URL.)
         /// </summary>
+        [Url(ErrorMessage = "Неверный формат URL для фотографии.")]
         public string PhotoUrl { get; set; }
 
         /// <summary>
@@ -29,8 +33,9 @@ namespace CloseFriends.Application.DTOs
         public string Description { get; set; }
 
         /// <summary>
-        /// Идентификатор владельца группы.
+        /// Идентификатор владельца группы. Должен быть положительным числом.
         /// </summary>
+        [Range(1, int.MaxValue, ErrorMessage = "OwnerId должен быть положительным числом.")]
         public int OwnerId { get; set; }
     }
 }

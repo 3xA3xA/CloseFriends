@@ -33,8 +33,9 @@ namespace CloseFriends.Application.Services
             // Проверка, существует ли уже пользователь с таким email.
             if (await _userRepository.EmailExistsAsync(registrationDto.Email))
             {
-                throw new Exception("Пользователь с таким email уже существует.");
+                throw new ArgumentException("Пользователь с таким email уже существует.");
             }
+
 
             // Хэширование пароля с использованием BCrypt.
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registrationDto.Password);

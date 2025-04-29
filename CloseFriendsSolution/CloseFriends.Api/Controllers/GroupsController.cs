@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CloseFriends.Application.DTOs;
 using CloseFriends.Application.Interfaces;
+using CloseFriends.Application.Queries;
+using CloseFriends.Application.Commands;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CloseFriends.Api.Controllers
 {
@@ -25,28 +28,55 @@ namespace CloseFriends.Api.Controllers
         }
 
         /// <summary>
-        /// Endpoint для создания новой группы.
-        /// Принимает DTO с данными группы и возвращает созданный объект.
+        /// Создает новую группу.
         /// </summary>
         /// <param name="dto">Данные для создания группы.</param>
+        /// <param name="commandHandler">Обработчик команды создания группы.</param>
         /// <returns>HTTP-ответ с DTO созданной группы.</returns>
         [HttpPost]
-        public async Task<IActionResult> CreateGroup([FromBody] GroupCreationDto dto)
+        [SwaggerOperation(
+            Summary = "Создание новой группы",
+            Description = "Принимает данные группы, валидирует их и создает новую группу. Возвращает созданный объект с уникальным идентификатором."
+        )]
+        [SwaggerResponse(201, "Группа успешно создана", typeof(GroupDto))]
+        [SwaggerResponse(400, "Неверные входные данные")]
+        public async Task<IActionResult> CreateGroup(
+            [FromBody] GroupCreationDto dto,
+            [FromServices] ICreateGroupCommandHandler commandHandler)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             try
             {
-                var createdGroup = await _groupService.CreateGroupAsync(dto);
-                return Ok(createdGroup);
+                GroupDto createdGroup = await commandHandler.HandleAsync(dto);
+                return CreatedAtAction(nameof(GetAllGroups), new { id = createdGroup.Id }, createdGroup);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при создании группы");
                 return BadRequest(ex.Message);
+            }
+        }
+
+        // Пример GET-метода для CreatedAtAction
+        [HttpGet]
+        [SwaggerOperation(
+            Summary = "Получение списка групп",
+            Description = "Возвращает список всех групп."
+        )]
+        [SwaggerResponse(200, "Список успешно получен", typeof(IEnumerable<GroupDto>))]
+        public async Task<IActionResult> GetAllGroups([FromServices] IGetGroupsQueryHandler queryHandler)
+        {
+            try
+            {
+                var groups = await queryHandler.HandleAsync();
+                return Ok(groups);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении списка групп");
+                return StatusCode(500, "Ошибка сервера");
             }
         }
     }

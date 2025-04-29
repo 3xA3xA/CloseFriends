@@ -25,6 +25,11 @@ namespace CloseFriends.Application.Interfaces
         Task AddAsync(User user);
 
         /// <summary>
+        /// Получает всех пользователей.
+        /// </summary>
+        Task<IEnumerable<User>> GetAllAsync();
+
+        /// <summary>
         /// Сохраняет изменения в хранилище данных.
         /// </summary>
         Task SaveChangesAsync();

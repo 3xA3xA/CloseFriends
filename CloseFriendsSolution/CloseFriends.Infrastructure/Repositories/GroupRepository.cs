@@ -44,5 +44,13 @@ namespace CloseFriends.Infrastructure.Repositories
         {
             return await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
         }
+
+        /// <summary>
+        /// Получает список всех групп.
+        /// </summary>
+        public async Task<IEnumerable<Group>> GetAllAsync()
+        {
+            return await _context.Groups.ToListAsync();
+        }
     }
 }

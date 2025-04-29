@@ -22,5 +22,10 @@ namespace CloseFriends.Application.Interfaces
         /// Получает группу по её идентификатору.
         /// </summary>
         Task<Group> GetByIdAsync(int groupId);
+
+        /// <summary>
+        /// Получает все группы.
+        /// </summary>
+        Task<IEnumerable<Group>> GetAllAsync();
     }
 }

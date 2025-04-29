@@ -35,6 +35,14 @@ namespace CloseFriends.Infrastructure.Repositories
         }
 
         /// <summary>
+        /// Получает всех участников групп.
+        /// </summary>
+        public async Task<IEnumerable<GroupMember>> GetAllAsync()
+        {
+            return await _context.GroupMembers.ToListAsync();
+        }
+
+        /// <summary>
         /// Сохраняет изменения в базе данных.
         /// </summary>
         public async Task SaveChangesAsync()

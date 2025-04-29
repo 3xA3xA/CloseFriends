@@ -19,6 +19,11 @@ namespace CloseFriends.Application.Interfaces
         Task<bool> IsMemberAsync(int groupId, int userId);
 
         /// <summary>
+        /// Получает всех участников групп.
+        /// </summary>
+        Task<IEnumerable<GroupMember>> GetAllAsync();
+
+        /// <summary>
         /// Сохраняет изменения в хранилище данных.
         /// </summary>
         Task SaveChangesAsync();

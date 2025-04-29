@@ -45,6 +45,14 @@ namespace CloseFriends.Infrastructure.Repositories
         }
 
         /// <summary>
+        /// Получает список всех пользователей.
+        /// </summary>
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        /// <summary>
         /// Сохраняет изменения в базе данных.
         /// </summary>
         public async Task SaveChangesAsync()

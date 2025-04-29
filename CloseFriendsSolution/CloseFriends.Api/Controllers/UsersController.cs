@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CloseFriends.Application.DTOs;
 using CloseFriends.Application.Interfaces;
+using CloseFriends.Application.Queries;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CloseFriends.Api.Controllers
 {
@@ -25,12 +27,15 @@ namespace CloseFriends.Api.Controllers
         }
 
         /// <summary>
-        /// Endpoint для регистрации нового пользователя.
-        /// Принимает данные регистрации и возвращает данные зарегистрированного пользователя.
+        /// Регистрирует нового пользователя.
         /// </summary>
-        /// <param name="registrationDto">DTO с данными регистрации.</param>
-        /// <returns>DTO с данными нового пользователя.</returns>
         [HttpPost("register")]
+        [SwaggerOperation(
+            Summary = "Регистрация нового пользователя",
+            Description = "Принимает данные регистрации и создает нового пользователя. Возвращает данные созданного пользователя."
+        )]
+        [SwaggerResponse(200, "Пользователь успешно зарегистрирован", typeof(UserDto))]
+        [SwaggerResponse(400, "Неверные входные данные")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
         {
             // Валидируем входные данные
@@ -48,6 +53,29 @@ namespace CloseFriends.Api.Controllers
             {
                 _logger.LogError(ex, "Ошибка при регистрации пользователя");
                 return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получает список всех пользователей.
+        /// </summary>
+        [HttpGet]
+        [SwaggerOperation(
+            Summary = "Получение всех пользователей",
+            Description = "Возвращает список всех зарегистрированных пользователей."
+        )]
+        [SwaggerResponse(200, "Список пользователей успешно получен", typeof(IEnumerable<UserDto>))]
+        public async Task<IActionResult> GetAllUsers([FromServices] IGetUsersQueryHandler queryHandler)
+        {
+            try
+            {
+                var users = await queryHandler.HandleAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении списка пользователей");
+                return StatusCode(500, "Ошибка сервера");
             }
         }
     }

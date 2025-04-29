@@ -5,6 +5,9 @@ using CloseFriends.Application.Interfaces;
 using CloseFriends.Application.Services;
 using CloseFriends.Infrastructure.Repositories;
 using CloseFriends.Domain.Entities;
+using CloseFriends.Application.Queries;
+using CloseFriends.Application.Commands;
+using System.Reflection;
 
 namespace CloseFriends.Api
 {
@@ -33,7 +36,11 @@ namespace CloseFriends.Api
 
             // Регистрация Swagger для визуализации и тестирования API
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.EnableAnnotations();
+            });
+
 
             // Регистрация сервисов и репозиториев в соответствии с принципом Dependency Injection.
             // Это позволяет слабозависимые реализации и соблюдает принцип Inversion of Control.
@@ -47,6 +54,16 @@ namespace CloseFriends.Api
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
             builder.Services.AddScoped<IGroupMemberService, GroupMemberService>();
+
+            // Регистрация обработчиков запросов (CQRS)
+            builder.Services.AddScoped<IGetGroupsQueryHandler, GetGroupsQueryHandler>();
+            builder.Services.AddScoped<IGetUsersQueryHandler, GetUsersQueryHandler>();
+            builder.Services.AddScoped<IGetGroupMembersQueryHandler, GetGroupMembersQueryHandler>();
+
+            // Регистрация командных обработчиков (CQRS)
+            builder.Services.AddScoped<ICreateGroupCommandHandler, CreateGroupCommandHandler>();
+            builder.Services.AddScoped<ICreateGroupMemberCommandHandler, CreateGroupMemberCommandHandler>();
+
 
             var app = builder.Build();
 

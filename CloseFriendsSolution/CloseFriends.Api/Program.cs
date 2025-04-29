@@ -37,12 +37,16 @@ namespace CloseFriends.Api
 
             // Регистрация сервисов и репозиториев в соответствии с принципом Dependency Injection.
             // Это позволяет слабозависимые реализации и соблюдает принцип Inversion of Control.
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-            // Регистрация сервисов и репозиториев в DI-контейнере
-            builder.Services.AddScoped<IGroupService, GroupService>();
+            // Регистрация репозиториев в DI-контейнере
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+
+            // Регистрация сервисовв DI-контейнере
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddScoped<IGroupMemberService, GroupMemberService>();
 
             var app = builder.Build();
 

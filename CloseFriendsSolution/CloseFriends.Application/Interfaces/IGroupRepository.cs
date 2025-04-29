@@ -17,5 +17,10 @@ namespace CloseFriends.Application.Interfaces
         /// Сохраняет изменения в хранилище данных.
         /// </summary>
         Task SaveChangesAsync();
+
+        /// <summary>
+        /// Получает группу по её идентификатору.
+        /// </summary>
+        Task<Group> GetByIdAsync(int groupId);
     }
 }

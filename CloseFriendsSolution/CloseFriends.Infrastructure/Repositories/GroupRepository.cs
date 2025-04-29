@@ -36,5 +36,13 @@ namespace CloseFriends.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        /// <summary>
+        /// Получает группу по её идентификатору.
+        /// </summary>
+        public async Task<Group> GetByIdAsync(int groupId)
+        {
+            return await _context.Groups.FirstOrDefaultAsync(g => g.Id == groupId);
+        }
     }
 }

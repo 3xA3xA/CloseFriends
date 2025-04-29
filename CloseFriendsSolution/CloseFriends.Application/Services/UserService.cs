@@ -61,5 +61,36 @@ namespace CloseFriends.Application.Services
                 Email = newUser.Email
             };
         }
+
+        /// <summary>
+        /// Проверяет учетные данные пользователя по email и паролю.
+        /// Метод производит поиск пользователя по email и сравнивает введённый пароль с хешем, 
+        /// хранящимся в базе, используя BCrypt.Net.BCrypt.Verify.
+        /// </summary>
+        /// <param name="email">Email пользователя.</param>
+        /// <param name="password">Введённый пароль.</param>
+        /// <returns>
+        /// Сущность пользователя, если введённый пароль соответствует хешу, иначе – null.
+        /// </returns>
+        public async Task<User> ValidateUserAsync(string email, string password)
+        {
+            // Получаем пользователя по email. Здесь используется метод GetUserByEmailAsync, который должен быть реализован в IUserRepository.
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                // Пользователь с указанным email не найден.
+                return null;
+            }
+
+            // Сравниваем введённый пароль с хешированным паролем, сохранённым в базе.
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+            if (!isPasswordValid)
+            {
+                // Пароль не совпадает.
+                return null;
+            }
+
+            return user;
+        }
     }
 }

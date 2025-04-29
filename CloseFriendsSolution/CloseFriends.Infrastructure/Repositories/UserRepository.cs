@@ -37,6 +37,19 @@ namespace CloseFriends.Infrastructure.Repositories
         }
 
         /// <summary>
+        /// Получает пользователя по указанному email.
+        /// </summary>
+        /// <param name="email">Email пользователя, по которому производится поиск.</param>
+        /// <returns>
+        /// Возвращает сущность пользователя, если пользователь найден; 
+        /// в противном случае возвращает null.
+        /// </returns>
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        /// <summary>
         /// Добавляет новую сущность пользователя в контекст.
         /// </summary>
         public async Task AddAsync(User user)

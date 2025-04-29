@@ -15,6 +15,13 @@ namespace CloseFriends.Application.Interfaces
         Task<bool> EmailExistsAsync(string email);
 
         /// <summary>
+        /// Возвращает пользователя по указанному email.
+        /// </summary>
+        /// <param name="email">Email пользователя.</param>
+        /// <returns>Пользователь, если найден, иначе null.</returns>
+        Task<User> GetUserByEmailAsync(string email);
+
+        /// <summary>
         /// Проверяет, существует ли пользователь с указанным идентификатором.
         /// </summary>
         Task<bool> ExistsByIdAsync(int userId);

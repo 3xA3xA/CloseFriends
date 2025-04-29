@@ -9,6 +9,11 @@ using CloseFriends.Application.Queries;
 using CloseFriends.Application.Commands;
 using System.Reflection;
 using Serilog;
+using CloseFriends.Application.Settings;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace CloseFriends.Api
 {
@@ -22,6 +27,44 @@ namespace CloseFriends.Api
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ?? connectionString;
 
+            // Настройка Serilog для логирования
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+            builder.Host.UseSerilog();
+
+            // Чтение настроек JWT из конфигурации
+            var jwtSection = builder.Configuration.GetSection("Jwt");
+            builder.Services.Configure<JwtSettings>(jwtSection);
+            var jwtSettings = jwtSection.Get<JwtSettings>();
+
+            // Регистрация аутентификации через JWT
+            var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
+
+            
+
 
             // Регистрация DbContext для использования в приложении
             builder.Services.AddDbContext<CloseFriendsContext>(options =>
@@ -33,14 +76,6 @@ namespace CloseFriends.Api
                 // Настройка сериализации для вывода enum в виде строк
                 options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
-
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(builder.Configuration)  // Читает настройки из appsettings.json
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
-
-            builder.Host.UseSerilog();
 
             // Добавление контроллеров и других сервисов
             builder.Services.AddControllers();
@@ -65,6 +100,7 @@ namespace CloseFriends.Api
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IGroupService, GroupService>();
             builder.Services.AddScoped<IGroupMemberService, GroupMemberService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
 
             // Регистрация обработчиков запросов (CQRS)
             builder.Services.AddScoped<IGetGroupsQueryHandler, GetGroupsQueryHandler>();
@@ -85,9 +121,12 @@ namespace CloseFriends.Api
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
             app.UseMiddleware<CloseFriends.Api.Middleware.ExceptionHandlingMiddleware>(); //Для обработки глобальных исключений
+
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapControllers();
             app.Run();
         }

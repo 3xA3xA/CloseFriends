@@ -1,4 +1,5 @@
-﻿using CloseFriends.Domain.Entities;
+﻿using System.Threading.Tasks;
+using CloseFriends.Domain.Entities;
 
 namespace CloseFriends.Application.Interfaces
 {
@@ -12,6 +13,11 @@ namespace CloseFriends.Application.Interfaces
         /// Проверяет, существует ли пользователь с указанным email.
         /// </summary>
         Task<bool> EmailExistsAsync(string email);
+
+        /// <summary>
+        /// Проверяет, существует ли пользователь с указанным идентификатором.
+        /// </summary>
+        Task<bool> ExistsByIdAsync(int userId);
 
         /// <summary>
         /// Добавляет нового пользователя в хранилище данных.

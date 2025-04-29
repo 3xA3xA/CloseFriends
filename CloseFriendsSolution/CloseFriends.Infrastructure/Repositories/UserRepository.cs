@@ -29,6 +29,14 @@ namespace CloseFriends.Infrastructure.Repositories
         }
 
         /// <summary>
+        /// Проверяет, существует ли пользователь с указанным ID.
+        /// </summary>
+        public async Task<bool> ExistsByIdAsync(int userId)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId);
+        }
+
+        /// <summary>
         /// Добавляет новую сущность пользователя в контекст.
         /// </summary>
         public async Task AddAsync(User user)

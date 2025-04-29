@@ -73,7 +73,7 @@ namespace CloseFriends.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Настройка уникального индекса для Email в таблице Users (пример)
+            // Настройка уникального индекса для Email в таблице Users
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
@@ -81,12 +81,11 @@ namespace CloseFriends.Infrastructure.Data
             // Настройка для навигационного свойства "Recipient" в Notification.
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Recipient)
-                .WithMany(u => u.ReceivedNotifications) // Убедитесь, что в классе User есть коллекция ReceivedNotifications
+                .WithMany(u => u.ReceivedNotifications)
                 .HasForeignKey(n => n.RecipientUserId)
-                .OnDelete(DeleteBehavior.Restrict); // Можно выбрать DeleteBehavior.NoAction или Restrict для предотвращения каскадного удаления
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Настройка для навигационного свойства "Sender" в Notification.
-            // Если у вас нет коллекции отправленных уведомлений в классе User, используйте WithMany() без параметров:
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Sender)
                 .WithMany() // нет свойства навигации в User для отправленных уведомлений

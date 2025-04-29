@@ -12,14 +12,16 @@ namespace CloseFriends.Application.Services
     public class GroupService : IGroupService
     {
         private readonly IGroupRepository _groupRepository;
+        private readonly IUserRepository _userRepository;
 
         /// <summary>
-        /// Конструктор, внедряющий зависимость от IGroupRepository.
+        /// Конструктор, внедряющий зависимость от IGroupRepository и IUserRepository.
         /// Принцип Dependency Inversion (D из SOLID).
         /// </summary>
-        public GroupService(IGroupRepository groupRepository)
+        public GroupService(IGroupRepository groupRepository, IUserRepository userRepository)
         {
             _groupRepository = groupRepository;
+            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -35,6 +37,13 @@ namespace CloseFriends.Application.Services
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
                 throw new ArgumentException("Название группы обязательно для заполнения.");
+            }
+
+            // Проверка существования владельца группы.
+            bool ownerExists = await _userRepository.ExistsByIdAsync(dto.OwnerId);
+            if (!ownerExists)
+            {
+                throw new ArgumentException("Пользователь с таким OwnerId не существует.");
             }
 
             // Генерация уникальной ссылки для приглашения (например, с использованием GUID).

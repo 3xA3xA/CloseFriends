@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloseFriends.Infrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloseFriends.Api", "CloseFriends.Api\CloseFriends.Api.csproj", "{F6EBD3EE-A645-4EB2-9303-09DD4EA09322}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloseFriends.Tests", "CloseFriends.Tests\CloseFriends.Tests.csproj", "{2A2CF866-E2BB-408F-B298-07C512A45395}"
 EndProject
 Global
